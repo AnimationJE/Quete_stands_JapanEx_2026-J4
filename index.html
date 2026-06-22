@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quête des Stands – Point Animations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-deep:#200008;
+  --bg-maroon:#5a0014;
+  --bg-maroon-2:#87001d;
+
+  --pink:#ff4fa3;
+  --pink-soft:#ff91c8;
+
+  --violet:#b05cff;
+  --cyan:#ffd15c;
+
+  --green:#6dff9f;
+  --red:#ff5a73;
+
+  --ink:#fff5f8;
+  --ink-dim:#f0c9d8;
+
+  --font-display:'Press Start 2P', monospace;
+  --font-body:'Rajdhani', Arial, sans-serif;
+}
+ 
+*{ box-sizing:border-box; }
+ 
+body{
+  font-family:var(--font-body);
+  background:
+    radial-gradient(circle at 50% 0%, var(--bg-maroon-2) 0%, var(--bg-maroon) 45%, var(--bg-deep) 100%);
+  color:var(--ink);
+  text-align:center;
+  padding:24px 16px;
+  min-height:100vh;
+  margin:0;
+  position:relative;
+  overflow-x:hidden;
+}
+ 
+/* ===== Scanlines CRT ambiance ===== */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.025) 0px,
+    rgba(255,255,255,0.025) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events:none;
+  z-index:2;
+}
+ 
+/* ===== Halos lumineux flottants ===== */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(255,79,163,0.12), transparent 40%),
+    radial-gradient(circle at 88% 75%, rgba(255,209,92,0.10), transparent 40%);
+  pointer-events:none;
+  z-index:0;
+}
+ 
+.arcade-frame{
+  max-width:440px;
+  margin:auto;
+  position:relative;
+  z-index:1;
+}
+ 
+.box{
+  background:linear-gradient(160deg, rgba(20,4,12,0.92), rgba(8,2,6,0.95));
+  padding:26px 22px 28px;
+  border-radius:20px;
+  border:2px solid rgba(255,47,214,0.45);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04) inset,
+    0 0 22px rgba(255,47,214,0.35),
+    0 0 60px rgba(155,77,255,0.18),
+    0 12px 40px rgba(0,0,0,0.6);
+  position:relative;
+  animation:frameGlow 3.2s ease-in-out infinite alternate;
+}
+ 
+@keyframes frameGlow{
+  from{ box-shadow:0 0 0 1px rgba(255,255,255,0.04) inset, 0 0 18px rgba(255,47,214,0.28), 0 0 50px rgba(155,77,255,0.14), 0 12px 40px rgba(0,0,0,0.6); }
+  to{   box-shadow:0 0 0 1px rgba(255,255,255,0.06) inset, 0 0 30px rgba(255,47,214,0.45), 0 0 75px rgba(155,77,255,0.26), 0 12px 40px rgba(0,0,0,0.6); }
+}
+ 
+/* coins façon borne d'arcade */
+.box::before,
+.box::after{
+  content:"";
+  position:absolute;
+  width:14px;
+  height:14px;
+  border:2px solid var(--cyan);
+  opacity:0.9;
+}
+.box::before{ top:-2px; left:-2px; border-right:none; border-bottom:none; border-radius:6px 0 0 0; }
+.box::after{ bottom:-2px; right:-2px; border-left:none; border-top:none; border-radius:0 0 6px 0; }
+ 
+h1{
+  font-family:var(--font-display);
+  font-size:15px;
+  line-height:1.6;
+  color:var(--pink);
+  text-shadow:
+    0 0 8px var(--pink),
+    0 0 20px rgba(255,79,163,0.8),
+    0 0 40px rgba(255,79,163,0.45);
+  letter-spacing:1px;
+  margin:0 0 18px;
+  cursor:default;
+  user-select:none;
+}
+ 
+h2{
+  font-family:var(--font-display);
+  font-size:11px;
+  line-height:1.7;
+  color:var(--cyan);
+  text-shadow:
+    0 0 8px rgba(255,209,92,0.8),
+    0 0 24px rgba(255,209,92,0.45);
+  letter-spacing:0.5px;
+  margin:0 0 14px;
+}
+ 
+p{
+  font-size:17px;
+  font-weight:600;
+  line-height:1.5;
+  color:var(--ink);
+  margin:10px 0;
+}
+ 
+/* ===== Barre de progression "vie" ===== */
+.progress-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:18px;
+}
+.progress-track{
+  flex:1;
+  height:10px;
+  background:rgba(255,255,255,0.08);
+  border-radius:6px;
+  overflow:hidden;
+  border:1px solid rgba(255,47,214,0.3);
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(
+    90deg,
+    #b05cff,
+    #ff4fa3,
+    #ffd15c
+  );
+  box-shadow:0 0 12px rgba(255,79,163,0.6);
+  border-radius:6px;
+  transition:width 0.5s ease;
+}
+.progress-label{
+  font-family:var(--font-display);
+  font-size:9px;
+  color:var(--ink-dim);
+  white-space:nowrap;
+}
+ 
+.stand-image{
+  width:100%;
+  max-width:360px;
+  margin:14px auto 18px;
+  border-radius:14px;
+  border:2px solid rgba(255,209,92,0.5);
+  box-shadow:
+    0 0 24px rgba(255,209,92,0.25),
+    0 0 50px rgba(255,79,163,0.15);
+  display:block;
+}
+ 
+input{
+  width:84%;
+  padding:13px 16px;
+  margin-top:6px;
+  border-radius:24px;
+  border:2px solid rgba(155,77,255,0.5);
+  background:rgba(255,255,255,0.06);
+  color:var(--ink);
+  text-align:center;
+  font-family:var(--font-body);
+  font-size:16px;
+  font-weight:600;
+  outline:none;
+  transition:border-color 0.25s, box-shadow 0.25s;
+}
+input::placeholder{ color:var(--ink-dim); opacity:0.7; }
+input:focus{
+  border-color:var(--cyan);
+  box-shadow:0 0 16px rgba(255,209,92,0.45);
+}
+ 
+button{
+  margin-top:16px;
+  padding:13px 26px;
+  background:linear-gradient(
+    135deg,
+    #ff4fa3,
+    #ff9a3c
+  );
+  border:none;
+  border-radius:30px;
+  font-family:var(--font-display);
+  font-size:11px;
+  letter-spacing:0.5px;
+  color:#2d0010;
+  cursor:pointer;
+  box-shadow:0 0 18px rgba(255,79,163,0.55);
+  transition:transform 0.18s ease, box-shadow 0.18s ease;
+}
+button:hover{
+  transform:scale(1.06);
+  box-shadow:
+    0 0 28px rgba(255,79,163,0.8),
+    0 0 50px rgba(255,154,60,0.45);
+}
+button:active{ transform:scale(0.97); }
+ 
+.success{
+  color:var(--green);
+  text-shadow:0 0 8px rgba(57,255,140,0.6);
+  font-weight:700;
+  margin-top:14px;
+}
+.error{
+  color:var(--red);
+  text-shadow:0 0 8px rgba(255,59,92,0.6);
+  font-weight:700;
+  margin-top:14px;
+}
+ 
+.mission-complete{
+  font-family:var(--font-display);
+  font-size:18px;
+  line-height:1.8;
+  color:var(--green);
+  text-shadow:
+    0 0 8px var(--green),
+    0 0 20px rgba(57,255,140,0.7),
+    0 0 40px rgba(57,255,140,0.4);
+  animation:pulse 1.2s infinite alternate;
+  margin-top:10px;
+}
+ 
+@keyframes pulse{
+  from{ transform:scale(1); opacity:0.75; }
+  to{   transform:scale(1.06); opacity:1; }
+}
+ 
+@media (prefers-reduced-motion: reduce){
+  .box, .mission-complete{ animation:none; }
+}
+</style>
+</head>
+<body>
+<div class="arcade-frame">
+  <div class="box">
+    <h1 id="title">QUÊTE&nbsp;DES&nbsp;STANDS</h1>
+    <div id="content"></div>
+  </div>
+</div>
+<script>
+/* ========================= RESET CACHÉ ========================= */
+const title = document.getElementById("title");
+let pressTimer;
+title.addEventListener("mousedown",startReset);
+title.addEventListener("touchstart",startReset);
+title.addEventListener("mouseup",cancelReset);
+title.addEventListener("mouseleave",cancelReset);
+title.addEventListener("touchend",cancelReset);
+function startReset(){
+  pressTimer=setTimeout(()=>{
+    localStorage.removeItem("progress");
+    localStorage.removeItem("startTime");
+    alert("Progression réinitialisée");
+    location.reload();
+  },3000);
+}
+function cancelReset(){ clearTimeout(pressTimer); }
+ 
+/* ========================= TIMER MIN 20 MIN ========================= */
+const MIN_TIME = 20 * 60 * 1000;
+let startTime = localStorage.getItem("startTime");
+if(!startTime){
+  startTime = Date.now();
+  localStorage.setItem("startTime",startTime);
+}else{
+  startTime = parseInt(startTime);
+}
+ 
+/* ========================= IMAGE ACCUEIL ========================= */
+const presentationImage = "images/La Quête des Stands.png";
+ 
+/* ========================= STANDS ========================= */
+const stands = [
+{ title:"Point Animations", text:"🔥✨ C'est parti ! ✨🔥\n\nPars explorer les stands et réponds à leurs énigmes." },
+{ title:"Hall 6 / Stand P730 – Animaniak", question:"Quel logiciel utilise l'association Animaniak pour ses sessions karaoké ?", answers:["karaoke mugen"] },
+{ title:"Hall 4 / Stand Q440 – The Project", question:"Quel moteur de création est utilisé par The Project pour développer ses jeux ? ", answers:["unreal engine"] },
+{ title:"Hall 6 / Stand H817 – Cause We Play", question:"Quel est le nom de l‘animal de compagnie à 4 pattes de Jinu ?", answers:["derpy"] },
+{ title:"Hall 5A / Stand S619 – Fédération Française de Mah-jong", question:"A combien de joueur peut-on jouer à ce jeu au minimum (en chiffre) ?", answers:["3"] },
+{ title:"Hall 4 / Stand P435 – L‘Abri du collectionneur fallout", question:"Comment s‘appelle le joueur dans Fallout New Vegas ?", answers:["le courrier"] }, 
+{ title:" Hall 3 / Stand A345 – Le Mimic d'Or ", question:"Quel jeu de rôle est mis en avant cette année sur le stand du Mimic d‘or ?", answers:["donjons et dragons"] },
+{ title:"Hall 6 / Stand R803 – Ludosport Paris", question:"Quelles sont les 3 armes principalement utilisées pour le combat au sabre laser ? Le sabre double, le bâton et, … ", answers:["le sabre long"] },
+{ title:"Hall 5A / Stand W566 – Once Upon a Show", question:"Quels sont les deux contes représentés sur le stand de Once Upon a Show ?", answers:["la belle est la bête et la petite sirène"] },
+{ title:"Hall 5A / Stand N506 – Paris Sumo", question:"Comment s‘appelle le rang le plus haut du sumo professionnel ?", answers:["yokozuna"] },
+{ title:"Hall 5A / Stand S595 – Pierre DELINFINI", question:"Comment s'appelle le fameux grimoire du Professeur DELINFINI où sont détaillés ses œuvres d'art uniques ?", answers:["le livre de lemniscate"] },
+{ title:"Hall 5A / Stand V526 – Studio JM Production", question:"Comment s'appelle l'égérie / Vtubeuse de Studio JM Production ?", answers:["konata nekoyama"] },
+{ title:"Hall 5A / Stand V518 – Vainkeurz", question:"Quel est le manga préféré du créateur de VAINKEURZ ?", answers:["dragon ball z"] }
+];
+ 
+/* ========================= SAUVEGARDE ========================= */
+let progress = parseInt(localStorage.getItem("progress"));
+if(isNaN(progress) || progress < 0 || progress >= stands.length){
+  progress = 0;
+  localStorage.setItem("progress",0);
+}
+let current = progress;
+const content = document.getElementById("content");
+ 
+/* ========================= NORMALISATION ========================= */
+function normalize(text){
+  return text.toLowerCase().normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z0-9\s]/g,"")
+    .replace(/\s+/g," ").trim();
+}
+ 
+function levenshtein(a, b) {
+  const matrix = [];
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b[i - 1] === a[j - 1]) matrix[i][j] = matrix[i - 1][j - 1];
+      else matrix[i][j] = Math.min(
+        matrix[i - 1][j - 1]+1,
+        matrix[i][j - 1]+1,
+        matrix[i - 1][j]+1
+      );
+    }
+  }
+  return matrix[b.length][a.length];
+}
+ 
+/* ========================= BARRE DE PROGRESSION ========================= */
+function renderProgressBar(){
+  const total = stands.length - 1; // le 1er stand est l'écran d'intro
+  const done = Math.max(0, Math.min(current, total));
+  const pct = Math.round((done/total)*100);
+  return `
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+  <div class="progress-label">${done}/${total}</div>
+</div>`;
+}
+ 
+/* ========================= RENDER ========================= */
+function render(){
+  if(current >= stands.length){
+    const elapsed = Date.now() - startTime;
+    if(elapsed < MIN_TIME){
+      content.innerHTML = `
+<p class="error">
+⛔ On ne la fait pas à Chibi Dino, pris la main dans le sac petit tricheur ! 😈<br><br>
+Retourne au Point Animations pour recommencer.<br>
+</p>
+<img src="images/holmes.png" class="stand-image">`;
+      return;
+    }
+    content.innerHTML = `
+<div class="mission-complete">MISSION<br>COMPLETE</div>
+<p class="success">
+🎉 Bravo !<br><br>
+Présente cet écran au staff du Point Animations.
+</p>`;
+    return;
+  }
+ 
+  const stand = stands[current];
+ 
+  if(!stand.question){
+    content.innerHTML = `
+<h2>${stand.title}</h2>
+<img src="${presentationImage}" class="stand-image">
+<p>${stand.text.replace(/\n/g,"<br>")}</p>
+<button onclick="next()">Commencer</button>`;
+    return;
+  }
+ 
+  content.innerHTML = `
+${renderProgressBar()}
+<h2>${stand.title}</h2>
+<p>${stand.question}</p>
+<input id="answer" placeholder="Ta réponse">
+<br>
+<button onclick="check()">Valider</button>
+<div id="message"></div>`;
+}
+ 
+/* ========================= CHECK ========================= */
+function isNumeric(str){ return /^[0-9]+$/.test(str); }
+ 
+function check(){
+  const answer = document.getElementById("answer");
+  const message = document.getElementById("message");
+  const userRaw = answer.value.trim();
+  const user = normalize(userRaw);
+ 
+  if(!user){
+    message.innerHTML = `<p class="error">Entre une réponse 😉</p>`;
+    return;
+  }
+ 
+  const validAnswers = stands[current].answers.map(a=>normalize(a));
+  const numericExpected = validAnswers.every(a => isNumeric(a));
+ 
+  let ok = false;
+  if(numericExpected){
+    ok = validAnswers.includes(userRaw);
+  } else {
+    ok = validAnswers.some(a=>{
+      if(user === a) return true;
+      if(user.includes(a)) return true;
+      if(levenshtein(user,a) <= Math.max(1, Math.floor(a.length * 0.3))) return true;
+      return false;
+    });
+  }
+ 
+  if(ok){
+    progress = current + 1;
+    localStorage.setItem("progress", progress);
+    message.innerHTML = `<p class="success">Bonne réponse !</p>
+<button onclick="next()">Continuer ➜</button>`;
+  } else {
+    message.innerHTML = `<p class="error">Mauvaise réponse, demande de l'aide sur le stand 👀</p>`;
+  }
+}
+ 
+/* ========================= NEXT ========================= */
+function next(){
+  if(current < stands.length - 1){
+    current++;
+    progress = current;
+    localStorage.setItem("progress", progress);
+    render();
+  } else {
+    current = stands.length;
+    render();
+  }
+}
+ 
+/* ========================= START ========================= */
+render();
+</script>
+</body>
+</html>
